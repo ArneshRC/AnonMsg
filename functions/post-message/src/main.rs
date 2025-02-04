@@ -41,8 +41,8 @@ fn response(status_code: i64, body: String) -> Result<ApiGatewayProxyResponse, E
 pub(crate) async fn post_message_handler(
     event: LambdaEvent<ApiGatewayProxyRequest>,
 ) -> Result<ApiGatewayProxyResponse, Error> {
-    log::info!("Entering handler...");
-    log::info!("Received event: {:?}", event);
+    log::debug!("Entering handler...");
+    log::debug!("Received event: {:?}", event);
 
     let Some(text) = event.payload.body else {
         return response(400, "No message provided".to_string());
@@ -52,7 +52,7 @@ pub(crate) async fn post_message_handler(
         return response(500, "Database connection error".to_string());
     };
 
-    log::info!("Connecting to MongoDB at {}", uri);
+    log::debug!("Connecting to MongoDB at {}", uri);
 
     let Ok(client) = Client::with_uri_str(uri).await else {
         return response(500, "Database connection error".to_string());
