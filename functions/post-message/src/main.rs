@@ -19,7 +19,7 @@ use chrono::Utc;
 async fn main() -> Result<(), Error> {
     SimpleLogger::new()
         .with_utc_timestamps()
-        .with_level(LevelFilter::Info)
+        .with_level(LevelFilter::Trace)
         .init()
         .unwrap();
 
@@ -41,6 +41,8 @@ fn response(status_code: i64, body: String) -> Result<ApiGatewayProxyResponse, E
 pub(crate) async fn post_message_handler(
     event: LambdaEvent<ApiGatewayProxyRequest>,
 ) -> Result<ApiGatewayProxyResponse, Error> {
+    log::info!("Received event: {:?}", event);
+
     let Some(text) = event.payload.body else {
         return response(400, "No message provided".to_string());
     };
