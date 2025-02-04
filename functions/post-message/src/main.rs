@@ -2,6 +2,7 @@ use aws_lambda_events::{
     encodings::Body,
     event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse},
 };
+use serde_json::Value;
 use http::header::HeaderMap;
 use lambda_runtime::{service_fn, Error, LambdaEvent};
 use log::LevelFilter;
@@ -39,38 +40,38 @@ fn response(status_code: i64, body: String) -> Result<ApiGatewayProxyResponse, E
 }
 
 pub(crate) async fn post_message_handler(
-    event: LambdaEvent<ApiGatewayProxyRequest>,
+    event: LambdaEvent<Value>,
 ) -> Result<ApiGatewayProxyResponse, Error> {
     log::debug!("Entering handler...");
     log::debug!("Received event: {:?}", event);
 
-    let Some(text) = event.payload.body else {
-        return response(400, "No message provided".to_string());
-    };
-
-    let Ok(uri) = env::var("MONGODB_URI") else {
-        return response(500, "Database connection error".to_string());
-    };
-
-    log::debug!("Connecting to MongoDB at {}", uri);
-
-    let Ok(client) = Client::with_uri_str(uri).await else {
-        return response(500, "Database connection error".to_string());
-    };
-
-    let database = client.database("anonmsg");
-    let messages: Collection<Document> = database.collection("messages");
-
-    if messages
-        .insert_one(doc! {
-            "text": text,
-            "timestamp": Utc::now().timestamp()
-        })
-        .await
-        .is_err()
-    {
-        return response(500, "Failed to post message".to_string());
-    }
+    // let Some(text) = event.payload.body else {
+    //     return response(400, "No message provided".to_string());
+    // };
+    //
+    // let Ok(uri) = env::var("MONGODB_URI") else {
+    //     return response(500, "Database connection error".to_string());
+    // };
+    //
+    // log::debug!("Connecting to MongoDB at {}", uri);
+    //
+    // let Ok(client) = Client::with_uri_str(uri).await else {
+    //     return response(500, "Database connection error".to_string());
+    // };
+    //
+    // let database = client.database("anonmsg");
+    // let messages: Collection<Document> = database.collection("messages");
+    //
+    // if messages
+    //     .insert_one(doc! {
+    //         "text": text,
+    //         "timestamp": Utc::now().timestamp()
+    //     })
+    //     .await
+    //     .is_err()
+    // {
+    //     return response(500, "Failed to post message".to_string());
+    // }
 
     response(200, "Successfully posted message".to_string())
 }

@@ -1435,6 +1435,7 @@ dependencies = [
  "log",
  "mongodb",
  "serde",
+ "serde_json",
  "simple_logger",
  "tokio",
 ]
