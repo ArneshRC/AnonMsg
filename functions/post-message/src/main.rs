@@ -41,6 +41,7 @@ fn response(status_code: i64, body: String) -> Result<ApiGatewayProxyResponse, E
 pub(crate) async fn post_message_handler(
     event: LambdaEvent<ApiGatewayProxyRequest>,
 ) -> Result<ApiGatewayProxyResponse, Error> {
+    log::info!("Entering handler...")
     log::info!("Received event: {:?}", event);
 
     let Some(text) = event.payload.body else {
